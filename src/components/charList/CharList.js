@@ -37,11 +37,17 @@ class CharList extends Component {
 
     render() {
         const {chars, loading, error} = this.state;
-        const charsOnPage = chars.map(({name, thumbnail}) => {
+        const charsOnPage = chars.map(({name, thumbnail, id}) => {
+
+            let imgStyle = {'objectFit': 'cover'};
+            // if (thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
+            //     imgStyle = {'objectFit': 'contain'};
+            // }
+
             return (
-                     <li className="char__item">
-                        <img src={thumbnail} alt="abyss"/>
-                         <div className="char__name">{name}</div>
+                     <li className="char__item" key={id} onClick={() => this.props.onClickChar(id)}>
+                        <img src={thumbnail} alt="abyss" style={imgStyle}/>
+                        <div className="char__name">{name}</div>
                     </li>
                     );
         })
@@ -49,7 +55,6 @@ class CharList extends Component {
         const isLoading = loading ? <Spinner/> : null;
         const isError = error ? <ErrorMessage/> : null;
         const content = !(loading || error) ? charsOnPage : null;
-        // const content = !isLoading ? <View charsOnPage={charsOnPage}/> : null;
 
         return (
             <div className="char__list">
@@ -58,12 +63,6 @@ class CharList extends Component {
                 <ul className="char__grid">
                     {content}
                 </ul>
-                {/* <ul className="char__grid">
-                    <li className="char__item">
-                        <img src={thumbnail} alt="abyss"/>
-                        <div className="char__name">{name}</div>
-                    </li>;
-                </ul> */}
                 <button className="button button__main button__long">
                     <div className="inner">load more</div>
                 </button>

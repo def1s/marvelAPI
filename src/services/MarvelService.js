@@ -24,17 +24,21 @@ class MarvelService {
 	}
 
 	_transformCharacter = (char) => {
-		if (char.description.length > 100) {
+		if (char.description.length > 200) { //длинное решение, можно сделать просто slice(0, 200)
 			const newCharDescr = char.description.split('').slice(0, 200).join('') + '...';
 			char.description = newCharDescr;
 		} else if (!char.description.length) {char.description = 'Not found'};
+
+		
 
 		return {
 			name: char.name,
 			description: char.description,
 			thumbnail: char.thumbnail.path + '.' + char.thumbnail.extension,
 			homepage: char.urls[0].url,
-			wiki: char.urls[1].url
+			wiki: char.urls[1].url,
+			id: char.id,
+			comics: char.comics.items.slice(0, 9)
 		}
 	}
 }
