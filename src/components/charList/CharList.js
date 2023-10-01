@@ -1,50 +1,32 @@
 import './charList.scss';
 
 import { useState, useEffect } from 'react';
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
 const CharList = (props) => {
-    const marvelService = new MarvelService();
+    const {getAllCharacters, loading, error} = useMarvelService();
 
     useEffect(() => {
-        updateAllChar();
+        onRequest(offset, true);
     }, []);
 
-    const [loading, setLoading] = useState(true);
     const [chars, setChars] = useState([]);
-    const [error, setError] = useState(false);
     const [offset, setOffset] = useState(210);
     const [newItemLoading, setNewItemLoading] = useState(false);
 
-    const onCharLoading = () => {
-        setNewItemLoading(true);
-    }
 
     const onCharsLoaded = (newChars) => {
         setChars(chars => [...chars, ...newChars]);
-        setLoading(false);
         setNewItemLoading(false);
         setOffset(offset => offset + 9);
     }
 
-
-    const onError = () => {
-        setLoading(false);
-        setError(true);
-    }
-
-    const updateAllChar = () => {
-        onRequest();
-    }
-
-    const onRequest = (offset) => {
-        onCharLoading();
-        marvelService
-            .getAllCharacters(offset)
-            .then(res => {onCharsLoaded(res)})
-            .catch(onError);
+    const onRequest = (offset, initial) => {
+        initial ? setNewItemLoading(false) : setNewItemLoading(true);
+       
+        getAllCharacters(offset).then(res => {onCharsLoaded(res)});
     }
 
     const charsOnPage = chars.map(({name, thumbnail, id}) => {
@@ -60,16 +42,15 @@ const CharList = (props) => {
                 );
     })
 
-    const isLoading = loading ? <Spinner/> : null;
+    const isLoading = loading && !newItemLoading ? <Spinner/> : null;
     const isError = error ? <ErrorMessage/> : null;
-    const content = !(loading || error) ? charsOnPage : null;
 
     return (
         <div className="char__list">
             {isLoading}
             {isError}
             <ul className="char__grid">
-                {content}
+                {charsOnPage}
             </ul>
             <button className="button button__main button__long"
                     disabled={newItemLoading} 
